@@ -1,7 +1,9 @@
 import sys
+from time import sleep
 import pygame
 
-from Settings import Settings
+from settings import Settings
+from game_stats import GameStats
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
@@ -22,18 +24,23 @@ class AlienInvasion:
 
         pygame.display.set_caption("Alien Invasion")
 
+        self.stats = GameStats(self)
+
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
 
         self._create_fleet()
 
+        self.game_active = True
+
     def run_game(self):
         while True:
             self._check_events()
-            self.ship.update()
-            self._update_bullets()
-            self._update_aliens()
+            if self.game_active:
+                self.ship.update()
+                self._update_bullets()
+                self._update_aliens()
             self._update_screen()
             self.clock.tick(60)  # 每秒60帧
 
@@ -121,6 +128,11 @@ class AlienInvasion:
     def _update_aliens(self):
         self._check_fleet_edges()
         self.aliens.update()
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            self._ship_hit()
+            print(f"Ship hit!!! life remain:{self.stats.ships_left}")
+
+        self._check_aliens_bottom()
 
     def _check_fleet_edges(self):
         for alien in self.aliens.sprites():
@@ -133,6 +145,22 @@ class AlienInvasion:
             alien.rect.y += self.settings.fleet_drop_speed
         self.settings.fleet_direction *= -1
 
+    def _ship_hit(self):
+        if self.stats.ships_left > 0:
+            self.stats.ships_left -= 1
+            self.bullets.empty()
+            self.aliens.empty()
+            self._create_fleet()
+            self.ship.center_ship()
+            sleep(0.5)
+        else:
+            self.game_active = False
+
+    def _check_aliens_bottom(self):
+        for alien in self.aliens.sprites():
+            if alien.rect.bottom >= self.settings.screen_height:
+                self._ship_hit()
+                break
 
 if __name__ == '__main__':
     ai = AlienInvasion()
