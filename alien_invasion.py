@@ -66,6 +66,8 @@ class AlienInvasion:
             sys.exit()
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
+        elif (event.key == pygame.K_p) and (not self.game_active):
+            self._start_game()
 
     def _check_keyup_events(self, event):
         # 响应释放
@@ -76,7 +78,7 @@ class AlienInvasion:
 
     def _fire_bullet(self):
         # 创建一颗子弹，并将其加入编组 bullets
-        if (len(self.bullets) < self.settings.bullets_allowed):
+        if len(self.bullets) < self.settings.bullets_allowed:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
 
@@ -168,16 +170,17 @@ class AlienInvasion:
     def _check_play_button(self, mouse_pos):
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.game_active:
-            self.stats.reset_stats()
-            self.game_active = True
+            self._start_game()
 
-            self.bullets.empty()
-            self.aliens.empty()
+    def _start_game(self):
+        self.stats.reset_stats()
+        self.game_active = True
+        self.bullets.empty()
+        self.aliens.empty()
+        self._create_fleet()
+        self.ship.center_ship()
+        pygame.mouse.set_visible(False)
 
-            self._create_fleet()
-            self.ship.center_ship()
-
-            pygame.mouse.set_visible(False)
 
 if __name__ == '__main__':
     ai = AlienInvasion()
