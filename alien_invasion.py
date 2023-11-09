@@ -97,6 +97,7 @@ class AlienInvasion:
             # 删除现有的子弹并创建一个新的外星舰队
             self.bullets.empty()
             self._create_fleet()
+            self.settings.increase_speed()
 
     def _update_screen(self):
         # 更新屏幕上的图像，并切换到新屏幕
@@ -170,6 +171,7 @@ class AlienInvasion:
     def _check_play_button(self, mouse_pos):
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.game_active:
+            self.settings.initialize_dynamic_settings()
             self._start_game()
 
     def _start_game(self):
