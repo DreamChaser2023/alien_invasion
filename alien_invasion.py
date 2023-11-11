@@ -116,12 +116,16 @@ class AlienInvasion:
             for aliens in collisions.values():
                 self.stats.score += self.settings.alien_points * len(aliens)
             self.sb.prep_score()
+            self.sb.check_high_score()
 
         if not self.aliens:
             # 删除现有的子弹并创建一个新的外星舰队
             self.bullets.empty()
             self._create_fleet()
             self.settings.increase_speed()
+
+            self.stats.level += 1
+            self.sb.prep_level()
 
     def _update_screen(self):
         # 更新屏幕上的图像，并切换到新屏幕
@@ -131,6 +135,7 @@ class AlienInvasion:
         self.ship.blitime()
         self.aliens.draw(self.screen)
         self.sb.show_score()
+        self.sb.prep_ships()
         if not self.game_active:
             self.play_button.draw_button()
             self.easy_button.draw_button()
@@ -163,7 +168,6 @@ class AlienInvasion:
         self.aliens.update()
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
             self._ship_hit()
-            print(f"Ship hit!!! life remain:{self.stats.ships_left}")
 
         self._check_aliens_bottom()
 
@@ -181,12 +185,15 @@ class AlienInvasion:
     def _ship_hit(self):
         if self.stats.ships_left > 0:
             self.stats.ships_left -= 1
+            self.sb.prep_ships()
+            print(f"Ship hit!!! life remain:{int(self.stats.ships_left)}")
             self.bullets.empty()
             self.aliens.empty()
             self._create_fleet()
             self.ship.center_ship()
             sleep(0.5)
         else:
+            print("Game Over!")
             self.game_active = False
             pygame.mouse.set_visible(True)
 
@@ -201,6 +208,8 @@ class AlienInvasion:
         if button_clicked and not self.game_active:
             self.stats.reset_stats()
             self.sb.prep_score()
+            self.sb.prep_level()
+            self.sb.prep_ships()
             self._start_game()
 
     def _check_difficulty_buttons(self, mouse_pos):
