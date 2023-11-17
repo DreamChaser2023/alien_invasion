@@ -7,7 +7,7 @@ class Settings:
         # self.bg_color = ("gray")
         # self.ship_limit = 0 #如果剩0，则只能死一次
         self.bullet_width = 3
-        self.bullet_width = 1200 # 测试全部消灭用
+        # self.bullet_width = 1200 # 测试全部消灭用
         self.bullet_height = 15
         self.bullet_color = (60, 60, 60)
         self.bullets_allowed = 3
@@ -37,12 +37,12 @@ class Settings:
             self.ship_speed = 3.0
             self.bullet_speed = 6.0
             self.alien_speed = 2.0
-            self.alien_speed = 20.0 #testing
+            # self.alien_speed = 20.0 #testing
 
         self.fleet_direction = 1
         self.alien_points = 50
 
-    def increase_speed(self):
+    def increase_speed(self):   
         self.ship_speed *= self.speedup_scale
         self.bullet_speed *= self.speedup_scale
         self.alien_speed *= self.speedup_scale
